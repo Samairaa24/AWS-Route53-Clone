@@ -3,15 +3,21 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/login', {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -21,10 +27,13 @@ export default function Login() {
         localStorage.setItem('user', JSON.stringify(data.user));
         router.push('/');
       } else {
-        alert('Login failed');
+        setError('Invalid credentials. Please try again.');
       }
     } catch (e) {
+      setError('Cannot connect to server. Please try again in a moment (backend may be waking up).');
       console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,6 +41,11 @@ export default function Login() {
     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f2f3f3'}}>
       <div className="card" style={{width: '400px'}}>
         <h2 style={{marginBottom: '20px', textAlign: 'center'}}>Sign in to AWS Console</h2>
+        {error && (
+          <div style={{background: '#fcf4f3', border: '1px solid #d13212', color: '#d13212', padding: '10px', marginBottom: '15px', fontSize: '13px'}}>
+            {error}
+          </div>
+        )}
         <form onSubmit={handleLogin}>
           <div className="form-group">
             <label>IAM user name</label>
@@ -53,7 +67,14 @@ export default function Login() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{width: '100%', marginTop: '10px'}}>Sign in</button>
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{width: '100%', marginTop: '10px'}}
+            disabled={loading}
+          >
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
         </form>
       </div>
     </div>

@@ -6,18 +6,22 @@ import { useRouter, usePathname } from 'next/navigation';
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (!user && pathname !== '/login') {
       router.push('/login');
     } else {
-      setLoading(false);
+      setReady(true);
     }
   }, [pathname, router]);
 
-  if (loading) return <div>Loading...</div>;
+  // On login page: always render children (no redirect needed)
+  if (pathname === '/login') return <>{children}</>;
+
+  // On other pages: wait until auth check is done
+  if (!ready) return <div style={{padding: '20px'}}>Loading...</div>;
 
   return <>{children}</>;
 }
