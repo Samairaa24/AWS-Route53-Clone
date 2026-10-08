@@ -3,7 +3,7 @@
 This is a clone of the AWS Route 53 console for managing Hosted Zones and DNS Records. It aims to replicate the core workflows and UI/UX of Route 53 using modern web technologies.
 
 ## Hosted Working Link
-[https://route53-clone-demo.vercel.app](https://route53-clone-demo.vercel.app) *(Note: This is a placeholder domain for the assignment demo)*
+🔗 **[https://awsclone.vercel.app](https://awsclone.vercel.app)**
 
 ## Architecture Overview
 
